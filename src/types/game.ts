@@ -28,6 +28,8 @@ export interface Game {
 
 /** Filters accepted by `filterGames`. Categories are OR'd; publisher is AND'd with them. */
 export interface GameFilters {
+    /** Category ids to include (OR'd); empty or omitted means any category. */
     categoryIds?: number[];
+    /** Publisher id to require; omitted means any publisher. */
     publisherId?: number;
 }
