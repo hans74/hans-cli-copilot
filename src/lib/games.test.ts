@@ -93,6 +93,7 @@ describe('games data-access helpers', () => {
             ]);
         });
 
+        /** Titles of the games returned by `filterGames` for the given filters. */
         const titles = async (filters?: Parameters<typeof filterGames>[1]): Promise<string[]> =>
             (await filterGames(db, filters)).map((g) => g.title);
 

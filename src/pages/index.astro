@@ -55,6 +55,7 @@ const [games, categories, publishers] = await Promise.all([
     const categoryBoxes = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="category"]'));
     const publisher = form.querySelector<HTMLSelectElement>('select[name="publisher"]')!;
 
+    /** Shows/hides cards for the current filter state, updates the count and syncs the URL query string. */
     const apply = (): void => {
       const selected = categoryBoxes.filter((box) => box.checked).map((box) => box.value);
       let visible = 0;

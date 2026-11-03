@@ -68,12 +68,20 @@ export async function getGameById(db: Database, id: number): Promise<Game | null
     return row ? mapGame(row) : null;
 }
 
-/** All categories ordered by name. */
+/**
+ * Lists all categories.
+ * @param db - Drizzle database instance.
+ * @returns Categories ordered by name.
+ */
 export async function getAllCategories(db: Database): Promise<Category[]> {
     return db.select({ id: categories.id, name: categories.name }).from(categories).orderBy(asc(categories.name));
 }
 
-/** All publishers ordered by name. */
+/**
+ * Lists all publishers.
+ * @param db - Drizzle database instance.
+ * @returns Publishers ordered by name.
+ */
 export async function getAllPublishers(db: Database): Promise<Publisher[]> {
     return db.select({ id: publishers.id, name: publishers.name }).from(publishers).orderBy(asc(publishers.name));
 }
@@ -81,6 +89,9 @@ export async function getAllPublishers(db: Database): Promise<Publisher[]> {
 /**
  * Games ordered by title, filtered by category and/or publisher.
  * Selected categories are OR'd together; the publisher filter is AND'd with them.
+ * @param db - Drizzle database instance.
+ * @param filters - Optional category ids and publisher id; omitted filters match everything.
+ * @returns Matching games ordered by title.
  */
 export async function filterGames(db: Database, filters: GameFilters = {}): Promise<Game[]> {
     const { categoryIds = [], publisherId } = filters;
