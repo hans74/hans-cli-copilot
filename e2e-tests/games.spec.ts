@@ -139,3 +139,72 @@ test.describe('Game Listing and Navigation', () => {
     });
   });
 });
+
+test.describe('Game Filtering', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByTestId('games-grid')).toBeVisible();
+  });
+
+  test('should filter games by one or more categories (OR)', async ({ page }) => {
+    const cards = page.getByTestId('game-card');
+    const total = await cards.count();
+    const filters = page.getByTestId('game-filters');
+
+    await filters.getByLabel('Strategy').check();
+    const strategyCount = await cards.filter({ visible: true }).count();
+    expect(strategyCount).toBeGreaterThan(0);
+    expect(strategyCount).toBeLessThan(total);
+    await expect(page.getByTestId('game-category').filter({ visible: true }).first()).toHaveText('Strategy');
+
+    await filters.locator('input[name="category"]:not(:checked)').first().check();
+    expect(await cards.filter({ visible: true }).count()).toBeGreaterThan(strategyCount);
+    await expect(page).toHaveURL(/category=\d+&category=\d+/);
+  });
+
+  test('should filter games by publisher and combine with categories', async ({ page }) => {
+    const visibleCards = page.getByTestId('game-card').filter({ visible: true });
+    const total = await visibleCards.count();
+
+    await page.getByTestId('filter-publisher').selectOption({ label: 'CodeForge Studios' });
+    const publisherCount = await visibleCards.count();
+    expect(publisherCount).toBeGreaterThan(0);
+    expect(publisherCount).toBeLessThan(total);
+    for (const text of await visibleCards.getByTestId('game-publisher').allTextContents()) {
+      expect(text.trim()).toBe('CodeForge Studios');
+    }
+
+    await page.getByTestId('game-filters').getByLabel('Strategy').check();
+    expect(await visibleCards.count()).toBeLessThanOrEqual(publisherCount);
+  });
+
+  test('should clear filters', async ({ page }) => {
+    const visibleCards = page.getByTestId('game-card').filter({ visible: true });
+    const total = await visibleCards.count();
+
+    await page.getByTestId('filter-publisher').selectOption({ label: 'CodeForge Studios' });
+    await expect(visibleCards).not.toHaveCount(total);
+
+    await page.getByTestId('filter-clear').click();
+    await expect(visibleCards).toHaveCount(total);
+    await expect(page.getByTestId('filter-empty')).toBeHidden();
+    await expect(page.getByTestId('filter-publisher')).toHaveValue('');
+    await expect(page).toHaveURL('/');
+  });
+
+  test('should be operable with the keyboard and announce results', async ({ page }) => {
+    const firstCategory = page.getByTestId('game-filters').locator('input[name="category"]').first();
+    await firstCategory.focus();
+    await expect(firstCategory).toBeFocused();
+    await page.keyboard.press('Space');
+    await expect(firstCategory).toBeChecked();
+    await expect(page.getByTestId('filter-result-count')).toHaveText(/^Showing \d+ of \d+ games$/);
+  });
+
+  test('should restore filters from the URL', async ({ page }) => {
+    const first = page.getByTestId('game-filters').locator('input[name="category"]').first();
+    const id = await first.getAttribute('value');
+    await page.goto(`/?category=${id}`);
+    await expect(first).toBeChecked();
+  });
+});
