@@ -91,7 +91,7 @@ This is a crowdfunding platform for games with a developer theme. The applicatio
 The application lives at the repository root:
 
 - `db/`: Drizzle schema, migrations, transforms, seed, and `games.csv`
-- `src/lib/`: Node SQLite client (`db.ts`) and data-access helpers (`games.ts`)
+- `src/lib/`: Node SQLite client (`db.ts`) and data-access helpers (`games.ts`, including `filterGames` for category/publisher filtering)
 - `src/components/`: reusable `.astro` components
 - `src/layouts/`: Astro layout templates
 - `src/pages/`: Astro page routes (`index.astro` listing, `game/[id].astro`, `404.astro`, `about.astro`)

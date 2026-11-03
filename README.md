@@ -42,6 +42,10 @@ npm run build      # prebuild migrates + seeds, then builds the static site
 npm run preview
 ```
 
+## Filtering games
+
+The home page lets users filter games by one or more categories (OR) and by publisher; the two filters are combined with AND. The site is statically prerendered, so all games are rendered at build time and a small scoped script in `src/pages/index.astro` shows/hides cards and keeps the selection in the URL (e.g. `/?category=1&category=2&publisher=3`). The `filterGames`, `getAllCategories`, and `getAllPublishers` helpers in `src/lib/games.ts` provide the same filtering at the data layer.
+
 ## Database
 
 The SQLite database is built from `db/games.csv` — there is no live data to migrate.
