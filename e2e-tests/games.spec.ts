@@ -17,6 +17,11 @@ test.describe('Game Listing and Navigation', () => {
       expect(await gameCards.count()).toBeGreaterThan(0);
     });
 
+    await test.step('Verify game cards show a rating out of 5', async () => {
+      const rating = page.getByTestId('game-card').first().getByTestId('game-card-rating');
+      await expect(rating).toHaveText(/^([0-5]\.\d \/ 5|No rating yet)$/);
+    });
+
     await test.step('Verify game cards have titles with content', async () => {
       const gameCards = page.getByTestId('game-card');
       await expect(gameCards.first().getByTestId('game-title')).toBeVisible();
